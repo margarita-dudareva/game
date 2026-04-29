@@ -1,0 +1,78 @@
+{
+  "Player1Name": "1",
+  "Player2Name": "2",
+  "RoundNumber": 14,
+  "CurrentPlayerName": "1",
+  "Player1Units": [
+    {
+      "Id": 27,
+      "Name": "Heavy Infantry",
+      "Attack": 39,
+      "Defense": 13,
+      "MaxHealth": 45,
+      "CurrentHealth": 5,
+      "Cost": 59,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 29,
+      "Name": "Light Infantry",
+      "Attack": 21,
+      "Defense": 4,
+      "MaxHealth": 21,
+      "CurrentHealth": 21,
+      "Cost": 32,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 30,
+      "Name": "Light Infantry",
+      "Attack": 22,
+      "Defense": 4,
+      "MaxHealth": 25,
+      "CurrentHealth": 25,
+      "Cost": 33,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 31,
+      "Name": "Archer",
+      "Attack": 22,
+      "Defense": 4,
+      "MaxHealth": 22,
+      "CurrentHealth": 22,
+      "Cost": 23,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 3,
+      "ArrowPower": 22
+    }
+  ],
+  "Player2Units": [
+    {
+      "Id": 52,
+      "Name": "Gulyay-Gorod",
+      "Attack": 0,
+      "Defense": 25,
+      "MaxHealth": 55,
+      "CurrentHealth": 55,
+      "Cost": 80,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    }
+  ],
+  "ProxyDamageLoggingEnabled": true,
+  "ProxyDeathBeepEnabled": true,
+  "DamageLogSessionNumber": 4
+}

@@ -1,0 +1,116 @@
+{
+  "Player1Name": "\u0430\u0430\u0430",
+  "Player2Name": "\u0432\u0432\u0432",
+  "RoundNumber": 2,
+  "CurrentPlayerName": "\u0430\u0430\u0430",
+  "Player1Units": [
+    {
+      "Id": 80,
+      "Name": "Light Infantry",
+      "Attack": 21,
+      "Defense": 4,
+      "MaxHealth": 29,
+      "CurrentHealth": 11,
+      "Cost": 35,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 81,
+      "Name": "Archer",
+      "Attack": 20,
+      "Defense": 3,
+      "MaxHealth": 22,
+      "CurrentHealth": 22,
+      "Cost": 20,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 24
+    },
+    {
+      "Id": 82,
+      "Name": "Healer",
+      "Attack": 13,
+      "Defense": 4,
+      "MaxHealth": 19,
+      "CurrentHealth": 19,
+      "Cost": 42,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 83,
+      "Name": "Light Infantry",
+      "Attack": 22,
+      "Defense": 3,
+      "MaxHealth": 22,
+      "CurrentHealth": 22,
+      "Cost": 26,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 84,
+      "Name": "Light Infantry",
+      "Attack": 21,
+      "Defense": 2,
+      "MaxHealth": 23,
+      "CurrentHealth": 23,
+      "Cost": 32,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    }
+  ],
+  "Player2Units": [
+    {
+      "Id": 110,
+      "Name": "Heavy Infantry",
+      "Attack": 39,
+      "Defense": 14,
+      "MaxHealth": 43,
+      "CurrentHealth": 43,
+      "Cost": 46,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 111,
+      "Name": "Light Infantry",
+      "Attack": 20,
+      "Defense": 2,
+      "MaxHealth": 28,
+      "CurrentHealth": 28,
+      "Cost": 20,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Id": 112,
+      "Name": "Light Infantry",
+      "Attack": 24,
+      "Defense": 4,
+      "MaxHealth": 20,
+      "CurrentHealth": 20,
+      "Cost": 33,
+      "IsAlive": true,
+      "UnitType": "Unknown",
+      "ArrowRange": null,
+      "ArrowPower": null
+    }
+  ],
+  "ProxyDamageLoggingEnabled": true,
+  "ProxyDeathBeepEnabled": true
+}

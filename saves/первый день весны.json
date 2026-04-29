@@ -1,0 +1,154 @@
+{
+  "Player1Name": "\u0430\u0430\u0430\u0430\u0430\u0430\u0430\u0430\u0430\u0430\u0430\u0430",
+  "Player2Name": "\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432",
+  "RoundNumber": 11,
+  "CurrentPlayerName": "\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432\u0432",
+  "Player1Units": [
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 36,
+      "Defense": 11,
+      "MaxHealth": 38,
+      "CurrentHealth": 18,
+      "Cost": 58,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 37,
+      "Defense": 12,
+      "MaxHealth": 42,
+      "CurrentHealth": 42,
+      "Cost": 52,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Light Infantry",
+      "Attack": 20,
+      "Defense": 2,
+      "MaxHealth": 29,
+      "CurrentHealth": 28,
+      "Cost": 27,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 37,
+      "Defense": 13,
+      "MaxHealth": 40,
+      "CurrentHealth": 40,
+      "Cost": 64,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Archer",
+      "Attack": 20,
+      "Defense": 3,
+      "MaxHealth": 25,
+      "CurrentHealth": 25,
+      "Cost": 26,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 2,
+      "ArrowPower": 20
+    }
+  ],
+  "Player2Units": [
+    {
+      "Name": "Light Infantry",
+      "Attack": 22,
+      "Defense": 4,
+      "MaxHealth": 23,
+      "CurrentHealth": 23,
+      "Cost": 21,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 37,
+      "Defense": 10,
+      "MaxHealth": 42,
+      "CurrentHealth": 42,
+      "Cost": 56,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 4,
+      "MaxHealth": 26,
+      "CurrentHealth": 25,
+      "Cost": 25,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 3,
+      "ArrowPower": 20
+    },
+    {
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 4,
+      "MaxHealth": 26,
+      "CurrentHealth": 26,
+      "Cost": 24,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 23
+    },
+    {
+      "Name": "Archer",
+      "Attack": 21,
+      "Defense": 5,
+      "MaxHealth": 26,
+      "CurrentHealth": 26,
+      "Cost": 33,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 3,
+      "ArrowPower": 23
+    },
+    {
+      "Name": "Light Infantry",
+      "Attack": 24,
+      "Defense": 6,
+      "MaxHealth": 27,
+      "CurrentHealth": 26,
+      "Cost": 35,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Light Infantry",
+      "Attack": 20,
+      "Defense": 3,
+      "MaxHealth": 29,
+      "CurrentHealth": 29,
+      "Cost": 29,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    }
+  ]
+}

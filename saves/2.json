@@ -1,0 +1,94 @@
+{
+  "Player1Name": "Rc.",
+  "Player2Name": "\u041A\u0441\u044E",
+  "RoundNumber": 4,
+  "CurrentPlayerName": "\u041A\u0441\u044E",
+  "Player1Units": [
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 35,
+      "Defense": 13,
+      "MaxHealth": 42,
+      "CurrentHealth": 18,
+      "Cost": 63,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Archer",
+      "Attack": 24,
+      "Defense": 6,
+      "MaxHealth": 21,
+      "CurrentHealth": 7,
+      "Cost": 21,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 3,
+      "ArrowPower": 22
+    },
+    {
+      "Name": "Light Infantry",
+      "Attack": 23,
+      "Defense": 3,
+      "MaxHealth": 23,
+      "CurrentHealth": 23,
+      "Cost": 31,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Archer",
+      "Attack": 21,
+      "Defense": 5,
+      "MaxHealth": 26,
+      "CurrentHealth": 26,
+      "Cost": 34,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 3,
+      "ArrowPower": 22
+    }
+  ],
+  "Player2Units": [
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 37,
+      "Defense": 14,
+      "MaxHealth": 38,
+      "CurrentHealth": 17,
+      "Cost": 59,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Light Infantry",
+      "Attack": 23,
+      "Defense": 3,
+      "MaxHealth": 29,
+      "CurrentHealth": 29,
+      "Cost": 29,
+      "IsAlive": true,
+      "UnitType": "LightInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    },
+    {
+      "Name": "Heavy Infantry",
+      "Attack": 39,
+      "Defense": 12,
+      "MaxHealth": 37,
+      "CurrentHealth": 37,
+      "Cost": 56,
+      "IsAlive": true,
+      "UnitType": "HeavyInfantry",
+      "ArrowRange": null,
+      "ArrowPower": null
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+{
+  "Player1Name": "\u0430",
+  "Player2Name": "\u0432",
+  "RoundNumber": 3,
+  "CurrentPlayerName": "\u0432",
+  "Player1Units": [
+    {
+      "Id": 75,
+      "Name": "Archer",
+      "Attack": 22,
+      "Defense": 5,
+      "MaxHealth": 26,
+      "CurrentHealth": 11,
+      "Cost": 30,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 2,
+      "ArrowPower": 23
+    },
+    {
+      "Id": 76,
+      "Name": "Archer",
+      "Attack": 21,
+      "Defense": 3,
+      "MaxHealth": 20,
+      "CurrentHealth": 1,
+      "Cost": 23,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 21
+    },
+    {
+      "Id": 77,
+      "Name": "Archer",
+      "Attack": 21,
+      "Defense": 3,
+      "MaxHealth": 20,
+      "CurrentHealth": 20,
+      "Cost": 23,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 21
+    }
+  ],
+  "Player2Units": [
+    {
+      "Id": 78,
+      "Name": "Archer",
+      "Attack": 22,
+      "Defense": 4,
+      "MaxHealth": 21,
+      "CurrentHealth": 4,
+      "Cost": 22,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 2,
+      "ArrowPower": 20
+    },
+    {
+      "Id": 79,
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 2,
+      "MaxHealth": 25,
+      "CurrentHealth": 25,
+      "Cost": 30,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 22
+    },
+    {
+      "Id": 80,
+      "Name": "Archer",
+      "Attack": 21,
+      "Defense": 2,
+      "MaxHealth": 27,
+      "CurrentHealth": 27,
+      "Cost": 22,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 20
+    },
+    {
+      "Id": 81,
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 6,
+      "MaxHealth": 29,
+      "CurrentHealth": 29,
+      "Cost": 20,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 21
+    },
+    {
+      "Id": 82,
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 6,
+      "MaxHealth": 29,
+      "CurrentHealth": 29,
+      "Cost": 20,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 21
+    },
+    {
+      "Id": 83,
+      "Name": "Archer",
+      "Attack": 23,
+      "Defense": 6,
+      "MaxHealth": 29,
+      "CurrentHealth": 29,
+      "Cost": 20,
+      "IsAlive": true,
+      "UnitType": "Archer",
+      "ArrowRange": 4,
+      "ArrowPower": 21
+    }
+  ],
+  "ProxyDamageLoggingEnabled": true,
+  "ProxyDeathBeepEnabled": true,
+  "DamageLogSessionNumber": 7
+}
