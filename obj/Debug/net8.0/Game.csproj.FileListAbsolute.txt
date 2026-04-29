@@ -40,3 +40,4 @@ D:\3_kurs\2_sem\ppa\ppa\Game\obj\Debug\net8.0\refint\Game.dll
 D:\3_kurs\2_sem\ppa\ppa\Game\obj\Debug\net8.0\Game.pdb
 D:\3_kurs\2_sem\ppa\ppa\Game\obj\Debug\net8.0\Game.genruntimeconfig.cache
 D:\3_kurs\2_sem\ppa\ppa\Game\obj\Debug\net8.0\ref\Game.dll
+D:\3_kurs\2_sem\ppa\ppa\Game\obj\Debug\net8.0\Game.sourcelink.json

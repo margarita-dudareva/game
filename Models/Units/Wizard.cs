@@ -11,6 +11,14 @@ public class Wizard : UnitBase
     {
     }
 
+    /// <summary>
+    /// Конструктор для создания копии с заданными параметрами
+    /// </summary>
+    public Wizard(int attack, int defense, int health, int cost, int range, int cloneProbability)
+        : base("Wizard", attack, defense, health, cost, new CloneAbility(range, cloneProbability))
+    {
+    }
+
     private static int GenerateAttack() => _random.Next(15, 22);
     private static int GenerateDefense() => _random.Next(4, 9);
     private static int GenerateHealth() => _random.Next(20, 28);

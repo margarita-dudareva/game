@@ -138,4 +138,13 @@ public class WallToWallFormation : IBattleFormation
 
         return inRadius;
     }
+
+    /// <summary>
+    /// Проверить, есть ли у юнита противник (пара)
+    /// Используется для логики спешл-абилити в режиме стенка на стенку
+    /// </summary>
+    public bool HasOpponent(IUnit unit, IArmy army, IArmy opponentArmy)
+    {
+        return GetOpponent(unit, army, opponentArmy) != null;
+    }
 }

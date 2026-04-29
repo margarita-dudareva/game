@@ -11,6 +11,14 @@ public class Healer : UnitBase, ICanBeHealed
     {
     }
 
+    /// <summary>
+    /// Конструктор для создания копии с заданными параметрами
+    /// </summary>
+    public Healer(int attack, int defense, int health, int cost, int range, int healPower) 
+        : base("Healer", attack, defense, health, cost, new HealAbility(range, healPower))
+    {
+    }
+
     private static int GenerateAttack() => _random.Next(8, 15);
     private static int GenerateDefense() => _random.Next(3, 8);
     private static int GenerateHealth() => _random.Next(18, 25);

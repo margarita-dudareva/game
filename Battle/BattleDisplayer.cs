@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 
 
@@ -11,6 +12,22 @@ using System.Linq;
 /// </summary>
 public class BattleDisplayer : IBattleDisplay
 {
+    /// <summary>
+    /// Получить глобальный номер юнита (с учетом обеих армий)
+    /// Первая армия: 1..N, вторая армия: N+1..N+M
+    /// </summary>
+    private int GetGlobalUnitNumber(int localIndex, int player1ArmySize, bool isPlayer1)
+    {
+        if (isPlayer1)
+        {
+            return localIndex + 1; // 1..N
+        }
+        else
+        {
+            return player1ArmySize + localIndex + 1; // N+1..N+M
+        }
+    }
+
     public void ShowBattleStart(string firstPlayerName)
     {
         try { Console.Clear(); } catch { }
@@ -413,52 +430,69 @@ public class BattleDisplayer : IBattleDisplay
 {
     var aliveUnits = army.Units.Where(u => u.IsAlive).ToList();
     const int COLUMN_WIDTH = 12;
+    const int MAX_UNITS_PER_ROW = 9;
 
-    string line1 = ""; // символы
-    string line2 = ""; // здоровье
-    string line3 = ""; // короткие способности
-    string extraInfo = ""; // длинные способности (перенос)
+    var result = new System.Text.StringBuilder();
 
-    for (int i = 0; i < aliveUnits.Count; i++)
+    // Разбиваем юнитов на группы по 9
+    for (int groupStart = 0; groupStart < aliveUnits.Count; groupStart += MAX_UNITS_PER_ROW)
     {
-        var unit = aliveUnits[i];
+        int groupEnd = Math.Min(groupStart + MAX_UNITS_PER_ROW, aliveUnits.Count);
+        
+        string line1 = ""; // символы с номерами
+        string line2 = ""; // здоровье
+        string line3 = ""; // способности
 
-        string symbol = unit.GetDisplaySymbol().ToString();
-        string health = $"{unit.CurrentHealth}/{unit.MaxHealth}";
-        string ability = GetUnitInfoWithAbilitiesAndBuffs(unit)
-                            .Replace("(", "")
-                            .Replace(")", "");
-
-        // если длинная строка → вынести вниз
-        if (ability.Length > COLUMN_WIDTH)
+        for (int i = groupStart; i < groupEnd; i++)
         {
-            extraInfo += CenterText(ability, COLUMN_WIDTH);
-            ability = ""; // в основной строке пусто
-        }
-        else if (string.IsNullOrWhiteSpace(ability))
-        {
-            ability = "-";
+            var unit = aliveUnits[i];
+
+            string symbol = $"{unit.GetDisplaySymbol()}({unit.Id})";
+            string health = $"{unit.CurrentHealth}/{unit.MaxHealth}";
+            string ability = GetUnitInfoWithAbilitiesAndBuffs(unit)
+                                .Replace("(", "")
+                                .Replace(")", "");
+
+            // если длинная строка → усечь или заменить
+            if (ability.Length > COLUMN_WIDTH)
+            {
+                ability = ability.Substring(0, Math.Min(COLUMN_WIDTH - 1, ability.Length));
+            }
+            else if (string.IsNullOrWhiteSpace(ability))
+            {
+                ability = "-";
+            }
+
+            line1 += CenterText(symbol, COLUMN_WIDTH);
+            line2 += CenterText(health, COLUMN_WIDTH);
+            line3 += CenterText(ability, COLUMN_WIDTH);
         }
 
-        line1 += CenterText(symbol, COLUMN_WIDTH);
-        line2 += CenterText(health, COLUMN_WIDTH);
-        line3 += CenterText(ability, COLUMN_WIDTH);
+        if (result.Length > 0)
+        {
+            result.Append("\n\n\n\n"); // 3 пустые строки между группами
+        }
+
+        result.Append(line1);
+        result.Append("\n");
+        result.Append(line2);
+        result.Append("\n");
+        result.Append(line3);
     }
 
-    string result = $"{line1}\n{line2}\n{line3}";
-
-    if (!string.IsNullOrWhiteSpace(extraInfo))
-    {
-        result += "\n" + extraInfo;
-    }
-
-    return result;
+    return result.ToString();
 }
 
     /// <summary>
     /// Вывести армию в режиме 3 на 3
     /// </summary>
     public string DisplayThreeOnThreeFormation(IArmy army)
+    {
+        // Поддержка для старого вызова без глобальных номеров
+        return DisplayThreeOnThreeFormation(army, army.Units.Count, true);
+    }
+
+    public string DisplayThreeOnThreeFormation(IArmy army, int player1ArmySize, bool isPlayer1)
     {
         const int UNITS_PER_ROW = 3;
         var aliveUnits = army.Units.Where(u => u.IsAlive).ToList();
@@ -471,7 +505,8 @@ public class BattleDisplayer : IBattleDisplay
             var unit = aliveUnits[i];
             string health = $"{unit.CurrentHealth}/{unit.MaxHealth}";
             string abilityBuffInfo = GetUnitInfoWithAbilitiesAndBuffs(unit);
-            result += $"║  [{i}] {unit.Name} {health}{abilityBuffInfo}\n";
+            int globalNum = GetGlobalUnitNumber(i, player1ArmySize, isPlayer1);
+            result += $"║  [{globalNum}] {unit.Name} {health}{abilityBuffInfo}\n";
             
             // Добавить баффы на отдельной строке если они есть
             string buffLine = GetBuffInfoLine(unit);
@@ -496,7 +531,8 @@ public class BattleDisplayer : IBattleDisplay
             var unit = aliveUnits[i];
             string health = $"{unit.CurrentHealth}/{unit.MaxHealth}";
             string abilityBuffInfo = GetUnitInfoWithAbilitiesAndBuffs(unit);
-            result += $"║  [{i}] {unit.Name} {health}{abilityBuffInfo}\n";
+            int globalNum = GetGlobalUnitNumber(i, player1ArmySize, isPlayer1);
+            result += $"║  [{globalNum}] {unit.Name} {health}{abilityBuffInfo}\n";
             
             // Добавить баффы на отдельной строке если они есть
             string buffLine = GetBuffInfoLine(unit);
@@ -625,7 +661,7 @@ public class BattleDisplayer : IBattleDisplay
             var unit = aliveUnits[i];
             string abilityBuffInfo = GetUnitInfoWithAbilitiesAndBuffs(unit);
             string healthStr = $"{unit.CurrentHealth}/{unit.MaxHealth}";
-            result += $"║  позиция #{i}: {unit.Name} {healthStr}{abilityBuffInfo}\n";
+            result += $"║  позиция #{i + 1}: {unit.Name} {healthStr}{abilityBuffInfo}\n";
             
             // Добавить баффы на отдельной строке если они есть
             string buffLine = GetBuffInfoLine(unit);
@@ -644,22 +680,55 @@ public class BattleDisplayer : IBattleDisplay
     /// </summary>
     public string DisplayThreeOnThreeMatchups(IBattleFormation formation, IArmy army1, IArmy army2, string player1Name, string player2Name)
     {
-        const int UNIT_WIDTH = 15;
         string result = "\n🥊 БОЕВЫЕ ПАРЫ (3 на 3):\n";
-        result += $"┌{new string('─', UNIT_WIDTH)}┬{new string('─', UNIT_WIDTH)}┐\n";
+        result += "════════════════════════════════════════════════════════════════════════════════════════════════════════\n";
 
         var ringUnits1 = formation.GetRingUnits(army1);
         var ringUnits2 = formation.GetRingUnits(army2);
 
-        for (int i = 0; i < Math.Max(ringUnits1.Count, ringUnits2.Count); i++)
-        {
-            string unit1 = i < ringUnits1.Count ? ringUnits1[i].Name : "---";
-            string unit2 = i < ringUnits2.Count ? ringUnits2[i].Name : "---";
+        int maxLen = Math.Max(ringUnits1.Count, ringUnits2.Count);
 
-            result += $"│ {unit1,-13} │ {unit2,-13} │\n";
+        for (int i = 0; i < maxLen; i++)
+        {
+            string unit1Full = "---";
+            string unit2Full = "---";
+            string buffLine1 = "";
+            string buffLine2 = "";
+
+            if (i < ringUnits1.Count)
+            {
+                var u1 = ringUnits1[i];
+                string health1 = $"{u1.CurrentHealth}/{u1.MaxHealth}";
+                string info1 = GetUnitInfoWithAbilitiesAndBuffs(u1);
+                unit1Full = $"{u1.Name} {health1} {info1}";
+                buffLine1 = GetBuffInfoLine(u1);
+            }
+
+            if (i < ringUnits2.Count)
+            {
+                var u2 = ringUnits2[i];
+                string health2 = $"{u2.CurrentHealth}/{u2.MaxHealth}";
+                string info2 = GetUnitInfoWithAbilitiesAndBuffs(u2);
+                unit2Full = $"{u2.Name} {health2} {info2}";
+                buffLine2 = GetBuffInfoLine(u2);
+            }
+
+            string marker1 = i < ringUnits1.Count ? "●" : "○";
+            string marker2 = i < ringUnits2.Count ? "●" : "○";
+
+            int globalNum1 = GetGlobalUnitNumber(i, army1.Units.Count, true);
+            int globalNum2 = GetGlobalUnitNumber(i, army1.Units.Count, false);
+
+            result += $"#{globalNum1}: {marker1} {unit1Full,-43} ──── {marker2} #{globalNum2}: {unit2Full,-43}\n";
+            
+            // Добавить баффы на отдельной строке если они есть
+            if (!string.IsNullOrEmpty(buffLine1) || !string.IsNullOrEmpty(buffLine2))
+            {
+                result += $"       {buffLine1,-43} ──── {buffLine2,-43}\n";
+            }
         }
 
-        result += $"└{new string('─', UNIT_WIDTH)}┴{new string('─', UNIT_WIDTH)}┘\n";
+        result += "════════════════════════════════════════════════════════════════════════════════════════════════════════\n";
         return result;
     }
 
@@ -704,7 +773,10 @@ public class BattleDisplayer : IBattleDisplay
             string marker1 = i < allUnits1.Count ? "●" : "○";
             string marker2 = i < allUnits2.Count ? "●" : "○";
 
-            result += $"#{i}: {marker1} {unit1Full,-43} ──── {marker2} #{i}: {unit2Full,-43}\n";
+            int globalNum1 = GetGlobalUnitNumber(i, army1.Units.Count, true);
+            int globalNum2 = GetGlobalUnitNumber(i, army1.Units.Count, false);
+
+            result += $"#{globalNum1}: {marker1} {unit1Full,-43} ──── {marker2} #{globalNum2}: {unit2Full,-43}\n";
             
             // Добавить баффы на отдельной строке если они есть
             if (!string.IsNullOrEmpty(buffLine1) || !string.IsNullOrEmpty(buffLine2))

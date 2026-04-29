@@ -98,6 +98,7 @@ public class GameFlowController
         }
 
         _menuManager.ShowGameStartMessage();
+        AssignUnitNumbers(player1, player2);
         _armyDisplayManager.DisplayArmies(player1, player2);
 
         _menuManager.ShowBattleStartMessage();
@@ -248,6 +249,30 @@ public class GameFlowController
         catch (Exception ex)
         {
             Console.WriteLine($"⚠ Не удалось удалить сохранение: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// Присвоить номера (ID) юнитам в обеих армиях после их создания
+    /// </summary>
+    private void AssignUnitNumbers(Player player1, Player player2)
+    {
+        int unitNumber = 1;
+
+        if (player1.Army != null)
+        {
+            foreach (var unit in player1.Army.Units)
+            {
+                unit.SetId(unitNumber++);
+            }
+        }
+
+        if (player2.Army != null)
+        {
+            foreach (var unit in player2.Army.Units)
+            {
+                unit.SetId(unitNumber++);
+            }
         }
     }
 }

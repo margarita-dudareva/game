@@ -134,8 +134,10 @@ public class Battle
                 }
                 else if (_formation is ThreeOnThreeFormation)
                 {
-                    armyVis1 = _displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!);
-                    armyVis2 = _displayer.DisplayThreeOnThreeFormation(_opponent.Army!);
+                    int player1Size = _player1.Army!.Units.Count;
+                    bool isCurrentPlayer1 = (_currentPlayer.Army == _player1.Army);
+                    armyVis1 = _displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!, player1Size, isCurrentPlayer1);
+                    armyVis2 = _displayer.DisplayThreeOnThreeFormation(_opponent.Army!, player1Size, !isCurrentPlayer1);
                     // Показать формирование
                     Console.WriteLine(armyVis1);
                     Console.WriteLine(armyVis2);
@@ -155,42 +157,113 @@ public class Battle
                     armyVis1 = _displayer.GetArmyVisualization(_currentPlayer.Army!);
                     armyVis2 = _displayer.GetArmyVisualization(_opponent.Army!);
                 }
-                
-                // Для режима стенка на стенку и 3 на 3 не показываем старые строки здоровья и абилити
-                if (!(_formation is WallToWallFormation) && !(_formation is ThreeOnThreeFormation))
+                    
+                    // Для режима стенка на стенку и 3 на 3 не показываем старые строки здоровья и абилити
+                    if (!(_formation is WallToWallFormation) && !(_formation is ThreeOnThreeFormation))
+                    {
+                        string unitHealth1 = _displayer.GetAllUnitsHealth(_currentPlayer.Army!);
+                        string unitAbilities1 = _displayer.GetAllUnitsAbilities(_currentPlayer.Army!);
+                        var unitBuffs1 = _displayer.GetAllUnitsBuffs(_currentPlayer.Army!);
+                        string unitHealth2 = _displayer.GetAllUnitsHealth(_opponent.Army!);
+                        string unitAbilities2 = _displayer.GetAllUnitsAbilities(_opponent.Army!);
+                        var unitBuffs2 = _displayer.GetAllUnitsBuffs(_opponent.Army!);
+                        _displayer.DisplayArmiesStatus(_currentPlayer.Name, armyVis1, unitHealth1, unitAbilities1, _opponent.Name, armyVis2, unitHealth2, unitAbilities2, unitBuffs1, unitBuffs2);
+                    }
+            }
+
+            if (!_opponent.Army!.HasAliveUnits())
+            {
+                var aliveUnits = GetAliveUnitsInfo(_currentPlayer.Army!);
+                _displayer.DisplayGameStatistics(_currentPlayer.Name, _roundNumber, aliveUnits);
+                return _currentPlayer;
+            }
+
+            // Проверяем на ничью: если 10 раундов без изменений или без урона, объявляем ничью
+            if (GetDrawCounter() >= 10 || _noDamageRoundsCounter >= 10)
+            {
+                _displayer.DisplayDrawStatistics(_roundNumber);
+                return null;
+            }
+
+            // Показываем меню и обрабатываем выбор (только если не в авто-режиме)
+            if (!_autoPlayToEnd)
+            {
+                bool continueRound = HandleMenuChoice(_player1, _player2);
+                if (!continueRound)
                 {
-                    string unitHealth1 = _displayer.GetAllUnitsHealth(_currentPlayer.Army!);
-                    string unitAbilities1 = _displayer.GetAllUnitsAbilities(_currentPlayer.Army!);
-                    var unitBuffs1 = _displayer.GetAllUnitsBuffs(_currentPlayer.Army!);
-                    string unitHealth2 = _displayer.GetAllUnitsHealth(_opponent.Army!);
-                    string unitAbilities2 = _displayer.GetAllUnitsAbilities(_opponent.Army!);
-                    var unitBuffs2 = _displayer.GetAllUnitsBuffs(_opponent.Army!);
-                    _displayer.DisplayArmiesStatus(_currentPlayer.Name, armyVis1, unitHealth1, unitAbilities1, _opponent.Name, armyVis2, unitHealth2, unitAbilities2, unitBuffs1, unitBuffs2);
+                    return null;
                 }
             }
 
-            // Если это первая итерация загруженной игры - только показываем состояние, не выполняем ход
-            if (_skipFirstTurn)
+            var temp = _currentPlayer;
+            _currentPlayer = _opponent;
+            _opponent = temp;
+        }
+    }
+
+    /// <summary>
+    /// Выполнить один ход
+    /// </summary>
+    private bool ExecuteTurn(Player currentPlayer, Player opponent)
+    {
+        var currentArmy = currentPlayer.Army!;
+        var opponentArmy = opponent.Army!;
+
+        // Проверяем, есть ли живые юниты
+        if (!currentArmy.HasAliveUnits())
+        {
+            return false;
+        }
+
+        // Проверяем, есть ли живые юниты у противника
+        if (!opponentArmy.HasAliveUnits())
+        {
+            return false;
+        }
+
+        var action = new AttackAction();
+        if (action == null)
+        {
+            return true;
+        }
+
+        // Получаем юнитов, которые находятся на ринге
+        var attackersOnRing = _formation.GetRingUnits(currentArmy);
+        
+        // Каждый боец на ринге атакует своего противника
+        foreach (var attacker in attackersOnRing)
+        {
+            if (!attacker.IsAlive)
+                continue;
+
+            var defender = _formation.GetOpponent(attacker, currentArmy, opponentArmy);
+            
+            if (defender == null || !defender.IsAlive)
+                continue;
+
+            int attackerGlobalNum = GetGlobalUnitNumber(attacker, currentArmy);
+            int defenderGlobalNum = GetGlobalUnitNumber(defender, opponentArmy);
+            action.Execute(attacker, defender, attackerGlobalNum, defenderGlobalNum);
+
+            // После атаки, проверяем потерю баффа у защитника (если он BuffableHeavyInfantry)
+            if (defender is IBuffable buffableDefender && buffableDefender.HasBuffs())
             {
-                _skipFirstTurn = false;
-                
-                // Показываем меню и обрабатываем выбор
-                if (!_autoPlayToEnd)
+                // Небольшая вероятность потерять бафф при попадании
+                if (_random.Next(100) < 20) // 20% вероятность
                 {
-                    bool continueRound = HandleMenuChoice(_player1, _player2);
-                    if (!continueRound)
+                    if (buffableDefender.RemoveRandomBuff())
                     {
-                        return null;
+                        int defenderNum = GetGlobalUnitNumber(defender, opponentArmy);
+                        _displayer.ShowBuffLost($"{defender.Name} (юнит №{defenderNum})");
                     }
                 }
-
-                var tempPlayer = _currentPlayer;
-                _currentPlayer = _opponent;
-                _opponent = tempPlayer;
-                continue;
             }
 
-            if (!ExecuteTurn(_currentPlayer, _opponent))
+            // Если защитник погиб, обрабатываем замену
+            if (!defender.IsAlive)
+            {
+                int defenderNum = GetGlobalUnitNumber(defender, opponentArmy);
+                _displayer.ShowUnitDefeated(defender.Name, "погиб");
             {
                 var aliveUnits = GetAliveUnitsInfo(_opponent.Army!);
                 _displayer.DisplayGameStatistics(_opponent.Name, _roundNumber, aliveUnits);
@@ -234,8 +307,10 @@ public class Battle
                 }
                 else if (_formation is ThreeOnThreeFormation)
                 {
-                    armyVis1 = _displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!);
-                    armyVis2 = _displayer.DisplayThreeOnThreeFormation(_opponent.Army!);
+                    int player1Size = _player1.Army!.Units.Count;
+                    bool isCurrentPlayer1 = (_currentPlayer.Army == _player1.Army);
+                    armyVis1 = _displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!, player1Size, isCurrentPlayer1);
+                    armyVis2 = _displayer.DisplayThreeOnThreeFormation(_opponent.Army!, player1Size, !isCurrentPlayer1);
                     // Показать формирование
                     Console.WriteLine(armyVis1);
                     Console.WriteLine(armyVis2);
@@ -339,7 +414,9 @@ public class Battle
             if (defender == null || !defender.IsAlive)
                 continue;
 
-            action.Execute(attacker, defender);
+            int attackerGlobalNum = GetGlobalUnitNumber(attacker, currentArmy);
+            int defenderGlobalNum = GetGlobalUnitNumber(defender, opponentArmy);
+            action.Execute(attacker, defender, attackerGlobalNum, defenderGlobalNum);
 
             // После атаки, проверяем потерю баффа у защитника (если он BuffableHeavyInfantry)
             if (defender is IBuffable buffableDefender && buffableDefender.HasBuffs())
@@ -349,7 +426,8 @@ public class Battle
                 {
                     if (buffableDefender.RemoveRandomBuff())
                     {
-                        _displayer.ShowBuffLost($"{defender.Name} (юнит №{defender.Id})");
+                        int defenderNum = GetGlobalUnitNumber(defender, opponentArmy);
+                        _displayer.ShowBuffLost($"{defender.Name} (юнит №{defenderNum})");
                     }
                 }
             }
@@ -357,6 +435,7 @@ public class Battle
             // Если защитник погиб, обрабатываем замену
             if (!defender.IsAlive)
             {
+                int defenderNum = GetGlobalUnitNumber(defender, opponentArmy);
                 _displayer.ShowUnitDefeated(defender.Name, "погиб");
                 _formation.HandleUnitDeath(defender, opponentArmy, currentArmy);
                 
@@ -398,7 +477,14 @@ public class Battle
 
             if (archerPosition == 1)
             {
-                _displayer.ShowArcherCannotShootFirst(archer.Name, archer.Id);
+                int archerGlobalNum = GetGlobalUnitNumber(archer, currentArmy);
+                _displayer.ShowArcherCannotShootFirst(archer.Name, archerGlobalNum);
+                continue;
+            }
+
+            // В режиме стенка на стенку лучник не использует способность, если у него есть противник
+            if (_formation is WallToWallFormation wallFormation && wallFormation.HasOpponent(archer, currentArmy, opponentArmy))
+            {
                 continue;
             }
 
@@ -411,7 +497,8 @@ public class Battle
 
                 if (availableTargets.Count == 0)
                 {
-                    _displayer.ShowArcherNoTargets(archer.Name, archer.Id, arrowAbility.Range);
+                    int archerGlobalNum = GetGlobalUnitNumber(archer, currentArmy);
+                    _displayer.ShowArcherNoTargets(archer.Name, archerGlobalNum, arrowAbility.Range);
                     continue;
                 }
 
@@ -421,18 +508,22 @@ public class Battle
                 arrowAbility.Activate(targetToAttack);
                 int damageDealt = healthBefore - targetToAttack.CurrentHealth;
 
-                _displayer.ShowArcherAttackResult(archer.Name, archer.Id, targetToAttack.Name, targetToAttack.Id, damageDealt, 
+                int archerGlobalNumber = GetGlobalUnitNumber(archer, currentArmy);
+                int targetGlobalNumber = GetGlobalUnitNumber(targetToAttack, opponentArmy);
+                _displayer.ShowArcherAttackResult(archer.Name, archerGlobalNumber, targetToAttack.Name, targetGlobalNumber, damageDealt, 
                                                    targetToAttack.CurrentHealth, targetToAttack.MaxHealth);
 
                 if (!targetToAttack.IsAlive)
                 {
-                    _displayer.ShowUnitDefeated($"{targetToAttack.Name} (юнит №{targetToAttack.Id})", "погиб от стрелы");
+                    int targetGlobalNum = GetGlobalUnitNumber(targetToAttack, opponentArmy);
+                    _displayer.ShowUnitDefeated($"{targetToAttack.Name} (юнит №{targetGlobalNum})", "погиб от стрелы");
                     opponentArmy.RemoveDeadUnits();
 
                     if (opponentArmy.HasAliveUnits())
                     {
                         var nextUnit = opponentArmy.GetCurrentUnit();
-                        _displayer.ShowNewUnitAppears(nextUnit?.Name ?? "Неизвестный юнит");
+                        int nextGlobalNum = GetGlobalUnitNumber(nextUnit!, opponentArmy);
+                        _displayer.ShowNewUnitAppears($"{nextUnit?.Name} (юнит №{nextGlobalNum})");
                     }
                 }
             }
@@ -471,6 +562,12 @@ public class Battle
             if (healerPosition == 1)
                 continue;
 
+            // В режиме стенка на стенку лекарь не использует способность, если у него есть противник
+            if (_formation is WallToWallFormation wallFormation && wallFormation.HasOpponent(healer, currentArmy, _player1.Army! == currentArmy ? _player2.Army! : _player1.Army!))
+            {
+                continue;
+            }
+
             if (healer.SpecialAbility is HealAbility healAbility)
             {
                 healAbility.SetUnitPosition(healerPosition - 1);
@@ -480,7 +577,8 @@ public class Battle
 
                 if (availableTargets.Count == 0)
                 {
-                    _displayer.ShowHealerNoTargets(healer.Name, healer.Id);
+                    int healerGlobalNum = GetGlobalUnitNumber(healer, currentArmy);
+                    _displayer.ShowHealerNoTargets(healer.Name, healerGlobalNum);
                     continue;
                 }
 
@@ -490,7 +588,8 @@ public class Battle
                 healAbility.Activate(targetToHeal);
                 int healAmount = targetToHeal.CurrentHealth - healthBefore;
 
-                _displayer.ShowHealerAttackResult(targetToHeal.Name, targetToHeal.Id, healAmount, 
+                int targetGlobalNum = GetGlobalUnitNumber(targetToHeal, currentArmy);
+                _displayer.ShowHealerAttackResult(targetToHeal.Name, targetGlobalNum, healAmount, 
                                                   targetToHeal.CurrentHealth, targetToHeal.MaxHealth);
             }
         }
@@ -512,6 +611,12 @@ public class Battle
             if (wizardPosition == 1)
                 continue;
 
+            // В режиме стенка на стенку волшебник не использует способность, если у него есть противник
+            if (_formation is WallToWallFormation wallFormation && wallFormation.HasOpponent(wizard, currentArmy, _player1.Army! == currentArmy ? _player2.Army! : _player1.Army!))
+            {
+                continue;
+            }
+
             if (wizard.SpecialAbility is CloneAbility cloneAbility)
             {
                 cloneAbility.SetUnitPosition(wizardPosition - 1);
@@ -521,13 +626,16 @@ public class Battle
 
                 if (availableTargets.Count == 0)
                 {
-                    _displayer.ShowWizardNoTargets(wizard.Name, wizard.Id);
+                    int wizardGlobalNum = GetGlobalUnitNumber(wizard, currentArmy);
+                    _displayer.ShowWizardNoTargets(wizard.Name, wizardGlobalNum);
                     continue;
                 }
 
                 var targetToClone = availableTargets[_random.Next(availableTargets.Count)];
 
-                _displayer.ShowWizardCloneAttempt(wizard.Name, wizard.Id, targetToClone.Name, cloneAbility.CloneProbability);
+                int wizardGlobalNumber = GetGlobalUnitNumber(wizard, currentArmy);
+                int targetGlobalNumber = GetGlobalUnitNumber(targetToClone, currentArmy);
+                _displayer.ShowWizardCloneAttempt(wizard.Name, wizardGlobalNumber, targetToClone.Name, cloneAbility.CloneProbability);
 
                 // Пытаемся клонировать (проверяем вероятность)
                 bool cloneSuccess = cloneAbility.TryClone();
@@ -541,16 +649,19 @@ public class Battle
                     {
                         // Вставляем клона ПЕРЕД магом
                         currentArmy.Units.Insert(wizardPosition - 1, clone);
-                        _displayer.ShowWizardCloneSuccess(targetToClone.Name, targetToClone.Id, clone.Name);
+                        int targetGlobalNum = GetGlobalUnitNumber(targetToClone, currentArmy);
+                        _displayer.ShowWizardCloneSuccess(targetToClone.Name, targetGlobalNum, clone.Name);
                     }
                     else
                     {
-                        _displayer.ShowWizardCloneFailed(targetToClone.Name, targetToClone.Id, cloneAbility.CloneProbability);
+                        int targetGlobalNum = GetGlobalUnitNumber(targetToClone, currentArmy);
+                        _displayer.ShowWizardCloneFailed(targetToClone.Name, targetGlobalNum, cloneAbility.CloneProbability);
                     }
                 }
                 else
                 {
-                    _displayer.ShowWizardCloneFailed(targetToClone.Name, targetToClone.Id, cloneAbility.CloneProbability);
+                    int targetGlobalNum = GetGlobalUnitNumber(targetToClone, currentArmy);
+                    _displayer.ShowWizardCloneFailed(targetToClone.Name, targetGlobalNum, cloneAbility.CloneProbability);
                 }
             }
         }
@@ -572,6 +683,12 @@ public class Battle
             if (squirePosition == 1)
                 continue;
 
+            // В режиме стенка на стенку оруженосец не использует способность, если у него есть противник
+            if (_formation is WallToWallFormation wallFormation && wallFormation.HasOpponent(squire, currentArmy, _player1.Army! == currentArmy ? _player2.Army! : _player1.Army!))
+            {
+                continue;
+            }
+
             if (squire.SpecialAbility is SquireAbility squireAbility)
             {
                 squireAbility.SetUnitPosition(squirePosition - 1);
@@ -581,7 +698,8 @@ public class Battle
 
                 if (availableTargets.Count == 0)
                 {
-                    _displayer.ShowSquireNoTargets(squire.Name, squire.Id);
+                    int squireGlobalNum = GetGlobalUnitNumber(squire, currentArmy);
+                    _displayer.ShowSquireNoTargets(squire.Name, squireGlobalNum);
                     continue;
                 }
 
@@ -599,7 +717,9 @@ public class Battle
                             : availableTargets[1];
                     }
 
-                    _displayer.ShowSquireBuffAttempt(squire.Name, squire.Id, targetUnit.Name, targetUnit.Id, squireAbility.ActivationProbability);
+                    int squireGlobalNumber = GetGlobalUnitNumber(squire, currentArmy);
+                    int targetGlobalNumber = GetGlobalUnitNumber(targetUnit, currentArmy);
+                    _displayer.ShowSquireBuffAttempt(squire.Name, squireGlobalNumber, targetUnit.Name, targetGlobalNumber, squireAbility.ActivationProbability);
 
                     // Применяем бафф
                     if (targetUnit is IBuffable buffableTarget)
@@ -607,12 +727,15 @@ public class Battle
                         squireAbility.Activate(buffableTarget);
                         var buffs = buffableTarget.GetActiveBuffs();
                         var lastBuff = buffs[buffs.Count - 1];
-                        _displayer.ShowSquireBuffSuccess(squire.Name, squire.Id, targetUnit.Name, targetUnit.Id, lastBuff.Name);
+                        int squireGlobalNum = GetGlobalUnitNumber(squire, currentArmy);
+                        int targetGlobalNum = GetGlobalUnitNumber(targetUnit, currentArmy);
+                        _displayer.ShowSquireBuffSuccess(squire.Name, squireGlobalNum, targetUnit.Name, targetGlobalNum, lastBuff.Name);
                     }
                 }
                 else
                 {
-                    _displayer.ShowSquireBuffFailed(squire.Name, squire.Id, squireAbility.ActivationProbability);
+                    int squireGlobalNum = GetGlobalUnitNumber(squire, currentArmy);
+                    _displayer.ShowSquireBuffFailed(squire.Name, squireGlobalNum, squireAbility.ActivationProbability);
                 }
             }
         }
@@ -646,8 +769,10 @@ public class Battle
                     }
                     else if (_formation is ThreeOnThreeFormation)
                     {
-                        Console.WriteLine(_displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!));
-                        Console.WriteLine(_displayer.DisplayThreeOnThreeFormation(_opponent.Army!));
+                        int player1Size = _player1.Army!.Units.Count;
+                        bool isCurrentPlayer1 = (_currentPlayer.Army == _player1.Army);
+                        Console.WriteLine(_displayer.DisplayThreeOnThreeFormation(_currentPlayer.Army!, player1Size, isCurrentPlayer1));
+                        Console.WriteLine(_displayer.DisplayThreeOnThreeFormation(_opponent.Army!, player1Size, !isCurrentPlayer1));
                     }
                     else if (_formation is WallToWallFormation)
                     {
@@ -758,5 +883,24 @@ public class Battle
     private string GetFormationName()
     {
         return _formation.GetType().Name;
+    }
+
+    /// <summary>
+    /// Получить глобальный номер юнита (с учетом обеих армий)
+    /// Первая армия: 1..N, вторая армия: N+1..N+M
+    /// </summary>
+    private int GetGlobalUnitNumber(IUnit unit, IArmy unitArmy)
+    {
+        int localIndex = unitArmy.Units.IndexOf(unit);
+        int player1Count = _player1.Army!.Units.Count;
+        
+        if (unitArmy == _player1.Army)
+        {
+            return localIndex + 1; // 1..N
+        }
+        else
+        {
+            return player1Count + localIndex + 1; // N+1..N+M
+        }
     }
 }

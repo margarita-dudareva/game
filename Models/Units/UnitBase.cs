@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 public class UnitBase : IUnit
 {
-    private static int _idCounter = 1;
     private readonly ISpecialAbility? _specialAbility;
     private readonly List<IUnitEventObserver> _observers = new List<IUnitEventObserver>();
 
-    public int Id { get; private set; }
+    public int Id { get; private set; } = 0;
     public string Name { get; }
     public int Attack { get; }
     public int Defense { get; }
@@ -20,7 +19,6 @@ public class UnitBase : IUnit
 
     public UnitBase(string name, int attack, int defense, int health, int cost, ISpecialAbility? specialAbility = null)
     {
-        Id = _idCounter++;
         Name = name;
         Attack = attack;
         Defense = defense;
@@ -31,16 +29,11 @@ public class UnitBase : IUnit
     }
 
     /// <summary>
-    /// Установить ID юнита (используется при восстановлении из сохраненной игры)
+    /// Установить ID юнита (используется при присвоении номера и восстановлении из сохраненной игры)
     /// </summary>
     public void SetId(int id)
     {
         Id = id;
-        // Убедитесь, что счетчик не будет переписан восстановленными ID
-        if (id >= _idCounter)
-        {
-            _idCounter = id + 1;
-        }
     }
 
 

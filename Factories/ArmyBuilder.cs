@@ -34,7 +34,7 @@ public class ArmyBuilder
         // НЕ используем опции напрямую - создаём новые юниты для армии
         var unitPool = GenerateUnitOptions();
 
-        while (unitPool.Count > 0)
+        while (unitPool.Count > 0 && remainingBudget > 0)
         {
             int randomIndex = SelectWeightedByAttack(unitPool, random);
             IUnit unit = unitPool[randomIndex];
@@ -45,12 +45,10 @@ public class ArmyBuilder
                 var newUnit = DuplicateUnitWithNewId(unit);
                 army.AddUnit(newUnit);
                 remainingBudget -= unit.Cost;
-                unitPool.RemoveAt(randomIndex);
             }
-            else
-            {
-                unitPool.RemoveAt(randomIndex);
-            }
+            
+            // Удаляем юнита из пула независимо от того, добавили мы его или нет
+            unitPool.RemoveAt(randomIndex);
         }
 
         return army;
@@ -128,11 +126,15 @@ public class ArmyBuilder
         }
         else if (template.SpecialAbility is HealAbility healAbility)
         {
-            newUnit = new Healer();
+            // Использовать параметры из шаблона для соответствия стоимости
+            newUnit = new Healer(template.Attack, template.Defense, template.MaxHealth, template.Cost,
+                                healAbility.Range, healAbility.HealPower);
         }
         else if (template.SpecialAbility is CloneAbility cloneAbility)
         {
-            newUnit = new Wizard();
+            // Использовать параметры из шаблона для соответствия стоимости
+            newUnit = new Wizard(template.Attack, template.Defense, template.MaxHealth, template.Cost,
+                                cloneAbility.Range, cloneAbility.CloneProbability);
         }
         else
         {
@@ -148,11 +150,11 @@ public class ArmyBuilder
             
             if (type.Name.Contains("LightInfantry") || template.Name == "Light Infantry")
             {
-                newUnit = new LightInfantry();
+                newUnit = new LightInfantry(template.Attack, template.Defense, template.MaxHealth, template.Cost);
             }
             else if (type.Name.Contains("HeavyInfantry") || template.Name == "Heavy Infantry")
             {
-                newUnit = new BuffableHeavyInfantry();
+                newUnit = new BuffableHeavyInfantry(template.Attack, template.Defense, template.MaxHealth, template.Cost);
             }
             else
             {

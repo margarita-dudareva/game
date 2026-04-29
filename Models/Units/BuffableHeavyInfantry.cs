@@ -7,7 +7,6 @@ using System.Linq;
 /// </summary>
 public class BuffableHeavyInfantry : IBuffable
 {
-    private static int _idCounter = 1;
     private readonly ISpecialAbility? _specialAbility;
     private readonly List<IBuff> _activeBuffs;
     private readonly List<IUnitEventObserver> _observers = new List<IUnitEventObserver>();
@@ -15,7 +14,7 @@ public class BuffableHeavyInfantry : IBuffable
     private readonly int _baseDefense;
     private static Random _random = new Random();
 
-    public int Id { get; private set; }
+    public int Id { get; private set; } = 0;
     public string Name { get; }
     public int MaxHealth { get; }
     public int CurrentHealth { get; private set; }
@@ -57,7 +56,6 @@ public class BuffableHeavyInfantry : IBuffable
     /// </summary>
     public BuffableHeavyInfantry(int attack, int defense, int health, int cost) 
     {
-        Id = _idCounter++;
         Name = "Heavy Infantry";
         _baseAttack = attack;
         _baseDefense = defense;
@@ -74,16 +72,11 @@ public class BuffableHeavyInfantry : IBuffable
     private static int GenerateCost() => _random.Next(45, 66);
 
     /// <summary>
-    /// Установить ID юнита (используется при восстановлении из сохраненной игры)
+    /// Установить ID юнита (используется при присвоении номера и восстановлении из сохраненной игры)
     /// </summary>
     public void SetId(int id)
     {
         Id = id;
-        // Убедитесь, что счетчик не будет переписан восстановленными ID
-        if (id >= _idCounter)
-        {
-            _idCounter = id + 1;
-        }
     }
 
     public virtual int CalculateDamage()
